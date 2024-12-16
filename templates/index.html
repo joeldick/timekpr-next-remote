@@ -176,47 +176,46 @@
     <script src="{{ url_for('static', filename='bootstrap.5.1.3.min.js') }}"></script>
     <script src="{{ url_for('static', filename='jquery-3.6.3.min.js') }}"></script>
     <script>
-        $.getJSON( "/config", function( data ) {
-            $.each( data, function( computer, user ) {
-                let rand_dom = '_' + uuidv4();
-                let times = get_times(rand_dom);
-                // todo - click doesn't work and radio spans accross users'
-                $("#people").append(
-                    "<span class='user' id='" + user + rand_dom + "'>" +
-                        "<p  class='h3'>" + user + "<span class='notify loading'></span></p>" +
-                        "<span class='time_wrapper'>" +
-                            "Unused: <span class='time time_left'>...</span> " +
-                            "Used: " +
-                                "<span class='time time_spent'>...</span>" +
-                        "</span><br/>" +
-                        "<div class='btn-group' role='group' aria-label='Action'>" +
-                            "<input type='radio'  class='btn-check' id='add" + rand_dom + "' value='add' name='action' />" +
-                            "<label  class='btn btn-outline-primary' for='add" + rand_dom + "'>Add</label>" +
-                            "<input type='radio'  class='btn-check' id='remove" + rand_dom + "' value='remove' name='action' />" +
-                            "<label  class='btn btn-outline-primary' for='remove" + rand_dom + "'>Remove</label> " +
-                        "</div> " +
-                        "<div class='btn-group' role='group' aria-label='Times'>" +
-                            times +
-                        "</div>" +
-                        "<div class='btn-group' role='group' aria-label='save'>" +
-                            "<button class='btn btn-outline-primary save_me' " +
-                                "value='save' user='" + user + "' computer='" + computer + "' >Save</button>" +
-                        "</div> " +
-                    "</span>"
-                );
+        $.getJSON("/config", function(data) {
+    $.each(data, function(computer, users) {
+        $.each(users, function(index, user) { // Iterate over each user
+            let rand_dom = '_' + uuidv4();
+            let times = get_times(rand_dom);
+            
+            $("#people").append(
+                "<span class='user' id='" + user + rand_dom + "'>" +
+                    "<p  class='h3'>" + user + "<span class='notify loading'></span></p>" +
+                    "<span class='time_wrapper'>" +
+                        "Unused: <span class='time time_left'>...</span> " +
+                        "Used: <span class='time time_spent'>...</span>" +
+                    "</span><br/>" +
+                    "<div class='btn-group' role='group' aria-label='Action'>" +
+                        "<input type='radio' class='btn-check' id='add" + rand_dom + "' value='add' name='action' />" +
+                        "<label class='btn btn-outline-primary' for='add" + rand_dom + "'>Add</label>" +
+                        "<input type='radio' class='btn-check' id='remove" + rand_dom + "' value='remove' name='action' />" +
+                        "<label class='btn btn-outline-primary' for='remove" + rand_dom + "'>Remove</label>" +
+                    "</div> " +
+                    "<div class='btn-group' role='group' aria-label='Times'>" +
+                        times +
+                    "</div>" +
+                    "<div class='btn-group' role='group' aria-label='save'>" +
+                        "<button class='btn btn-outline-primary save_me' value='save' user='" + user + "' computer='" + computer + "' >Save</button>" +
+                    "</div> " +
+                "</span>"
+            );
 
-                $('#' + user  + rand_dom + " .notify").show().html("Loading...");
-                $('#' + user + rand_dom + ' .btn').addClass("disabled");
-                $('#' + user  + rand_dom + ' .btn-check').addClass("disabled");
+            $('#' + user  + rand_dom + " .notify").show().html("Loading...");
+            $('#' + user + rand_dom + ' .btn').addClass("disabled");
+            $('#' + user  + rand_dom + ' .btn-check').addClass("disabled");
 
-                setInterval(function () {
-                    $('#' + user  + rand_dom + " .loading").fadeIn(1300).fadeOut(1300);
-                }, 1400);
-                $.getJSON( "/get_usage/" + computer + "/" + user, function( usage ) {
-                    render_user_to_dom(user, computer, usage, rand_dom);
-                });
+            // Fetch usage for each user
+            $.getJSON("/get_usage/" + computer + "/" + user, function(usage) {
+                render_user_to_dom(user, computer, usage, rand_dom);
             });
         });
+    });
+});
+
 
         function get_times(rand_dom){
             const second_options = [300, 900, 1800, 2700, 3600];
@@ -328,7 +327,3 @@
     <script src="{{ url_for('static', filename='jquery-3.6.3.min.js') }}"></script>
   </body>
 </html>
-
-
-
-
